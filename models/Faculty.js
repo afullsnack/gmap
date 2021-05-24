@@ -1,4 +1,4 @@
-import mongoose, { model } from "mongoose";
+import mongoose from "mongoose";
 import { connectDB } from "../lib/db";
 
 const Schema = mongoose.Schema;

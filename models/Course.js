@@ -1,4 +1,4 @@
-import mongoose, { model } from "mongoose";
+import mongoose from "mongoose";
 import { connectDB } from "../lib/db";
 
 const Schema = mongoose.Schema;
@@ -17,17 +17,8 @@ try {
     level: { type: String, required: [true, "A study level is required"] },
 
     lecturer: {
-      name: { type: String },
-      staff_type: {
-        type: String,
-        enum: ["permanent", "non-permanent", "teaching"],
-        default: "permanent",
-      },
-      email: {
-        type: String,
-        unique: true,
-        required: [true, "Adde lecturer email address"],
-      },
+      type: ObjectId,
+      ref: "Lecturer",
     },
   });
   Course = mongoose.model("Course", CourseSchema);
