@@ -2,7 +2,7 @@ import mongoose, { model } from "mongoose";
 import { connectDB } from "../lib/db";
 let User;
 try {
-  const db = connectDB();
+  connectDB();
   const UserSchema = new mongoose.Schema({
     firstname: { type: String, required: [true, "Please add first name"] },
     lastname: { type: String, required: [true, "Please add last name"] },
@@ -12,10 +12,7 @@ try {
       type: String,
       required: [true, "Please add a valid email account"],
     },
-    // phone: {
-    //   type: String,
-    //   required: [true, "Please add a valid phone number"],
-    // },
+    isAdmin: { type: Boolean },
   });
   User = mongoose.model("User", UserSchema);
 } catch (err) {

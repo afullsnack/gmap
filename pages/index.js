@@ -1,22 +1,234 @@
-import Head from "next/head";
-import Image from "next/image";
+// import Head from "next/head";
+import { useState } from "react";
+import { useRouter } from "next/router";
 import styles from "../styles/Home.module.css";
-import "isomorphic-fetch";
-import { url } from "../lib/config";
+import Card from "antd/lib/card";
+import Row from "antd/lib/row";
+import Col from "antd/lib/col";
+import Input from "antd/lib/input";
+import Button from "antd/lib/button";
+import message from "antd/lib/message";
+import { createAccount, login } from "../lib/user";
+import { applySession } from "next-session";
+import { sessionOptions } from "../lib/config";
+import { connectDB } from "../lib/db";
+// import withLayout from "components/globalLayout.js";
 
-export default function Home() {
-  return <div className={styles.container}></div>;
+function Home() {
+  const [hasAccount, setHasAccount] = useState(true);
+  return (
+    <Row
+      gutter={8}
+      style={{ margin: 0, paddingTop: 150 }}
+      className={styles.myrow}
+    >
+      <Col
+        xxs={{ span: 0 }}
+        xs={{ span: 0 }}
+        sm={{ span: 3 }}
+        lg={{ span: 6 }}
+      ></Col>
+      <Col
+        xxs={{ span: 24 }}
+        xs={{ span: 24 }}
+        sm={{ span: 18 }}
+        lg={{ span: 12 }}
+      >
+        <Card hoverable>
+          {hasAccount && <LoginView />}
+          {!hasAccount && <CreateAccountView />}
+          {hasAccount && (
+            <span style={{ fontSize: 12, marginTop: 20 }}>
+              Don't have an account?
+            </span>
+          )}
+          {!hasAccount && (
+            <span style={{ fontSize: 12, marginTop: 20 }}>
+              Already have an account?
+            </span>
+          )}
+          <Button
+            type="link"
+            size="small"
+            onClick={() => setHasAccount(!hasAccount)}
+          >
+            {hasAccount ? "create account" : "Login"}
+          </Button>
+        </Card>
+      </Col>
+      <Col
+        xxs={{ span: 0 }}
+        xs={{ span: 0 }}
+        sm={{ span: 3 }}
+        lg={{ span: 6 }}
+      ></Col>
+    </Row>
+  );
 }
 
-export async function getServerSideProps(context) {
-  const res = await fetch(`${url}/api/login`, {
-    method: "POST",
-    body: JSON.stringify({ username: "mimi", password: "xyz" }),
-  }).then((res) => res.json());
+function LoginView() {
+  const router = useRouter();
+  const [username, setUsername] = useState();
+  const [password, setPassword] = useState();
+  const [loading, setLoading] = useState(false);
+  return (
+    <>
+      <Input
+        type="text"
+        placeholder="Username/Email"
+        style={{ marginBottom: 20 }}
+        onChange={(e) => setUsername(e.target.value)}
+      />
+      <Input
+        type="password"
+        placeholder="Password"
+        style={{ marginBottom: 20 }}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+      <Button
+        type="primary"
+        size="large"
+        block
+        loading={loading}
+        onClick={async () => {
+          setLoading(true);
+          if (
+            username == "" ||
+            password == "" ||
+            username == null ||
+            password == null
+          ) {
+            console.assert(username, password, "Input the values correctly");
+            message.error("Username and Password fields are required");
+            return;
+          }
+          // submitLogin
+          const user = await login({ username, password });
+          setLoading(false);
+          console.log("User details: ", user);
+          router.push("/dashboard");
+        }}
+      >
+        Login
+      </Button>
+    </>
+  );
+}
 
-  console.log(res);
+function CreateAccountView() {
+  // initialized router
+  const router = useRouter();
+  const [firstname, setFirstname] = useState();
+  const [lastname, setLastname] = useState();
+  const [username, setUsername] = useState();
+  const [email, setEmail] = useState();
+  const [password, setPassword] = useState();
+  const [loading, setLoading] = useState(false);
+  return (
+    <>
+      <Row gutter={8}>
+        <Col span={12}>
+          <Input
+            type="text"
+            placeholder="First Name"
+            style={{ marginBottom: 20 }}
+            onChange={(e) => setFirstname(e.target.value)}
+          />
+        </Col>
+        <Col span={12}>
+          <Input
+            type="text"
+            placeholder="Last Name"
+            style={{ marginBottom: 20 }}
+            onChange={(e) => setLastname(e.target.value)}
+          />
+        </Col>
+        <Col span={24}>
+          <Input
+            type="text"
+            placeholder="Username"
+            style={{ marginBottom: 20 }}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+        </Col>
+        <Col span={24}>
+          <Input
+            type="email"
+            placeholder="Email"
+            style={{ marginBottom: 20 }}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </Col>
+        <Col span={24}>
+          <Input
+            type="password"
+            placeholder="Password"
+            style={{ marginBottom: 20 }}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </Col>
+        <Col span={24}>
+          <Button
+            type="primary"
+            size="large"
+            block
+            loading={loading}
+            onClick={async () => {
+              setLoading(true);
+              // check the values
+              if (
+                firstname == "undefined" ||
+                lastname == "undefined" ||
+                username == "undefined" ||
+                email == "undefined" ||
+                password == "undefined" ||
+                firstname == null ||
+                lastname == null ||
+                username == null ||
+                email == null ||
+                password == null
+              ) {
+                console.assert(
+                  firstname,
+                  lastname,
+                  username,
+                  email,
+                  password,
+                  "Values must be set for the inputs"
+                );
+                message.error("You must enter a value for the inputs");
+              }
 
+              const user = await createAccount({
+                firstname,
+                lastname,
+                username,
+                email,
+                password,
+              });
+              setLoading(false);
+              console.info(user, "New user created data returned");
+              router.push("/", "/login");
+            }}
+          >
+            Submit
+          </Button>
+        </Col>
+      </Row>
+    </>
+  );
+}
+
+export async function getServerSideProps({ req, res }) {
+  await applySession(req, res, sessionOptions);
+
+  console.log(req?.session?.user);
+  let user = JSON.stringify(req?.session?.user);
+
+  if (!user) return { props: {} };
   return {
-    props: {},
+    props: { user },
   };
 }
+
+export default Home;

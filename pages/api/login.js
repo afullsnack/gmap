@@ -20,14 +20,16 @@ const handler = async (req, res) => {
     const { username, password } = JSON.parse(req.body);
 
     // return the logged in user detail in the database
-    let user = await User.findOne({});
-    // { username, password },
-    // { projection: { firstname: 1, lastname: 1, email: 1, username: 1 } }
-    // ();
-    // console.table(user);
-    console.log("User return", user);
-    // user = JSON.parse(JSON.stringify(user));
-    // req.session?.user ? null : (req.session.user = user || {});
+    let result = await User.findOne({ username, password }, [
+      "firstname",
+      "lastname",
+      "email",
+      "username",
+    ]);
+    // console.table(result);
+    console.log("User return", result);
+    const user = JSON.parse(JSON.stringify(result));
+    req.session.user = user || {};
     user ? res.json({ user }) : res.json({ message: "No such users" });
   } catch (err) {
     console.log(err.message || err.toString());
