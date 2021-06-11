@@ -30,7 +30,9 @@ const handler = async (req, res) => {
     console.log("User return", result);
     const user = JSON.parse(JSON.stringify(result));
     req.session.user = user || {};
-    user ? res.json({ user }) : res.json({ message: "No such users" });
+    user
+      ? res.json({ data: { user, message: "Found User" } })
+      : res.json({ data: { message: "No such users" } });
   } catch (err) {
     console.log(err.message || err.toString());
     res.json({ error: err.message || err.toString() });

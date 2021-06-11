@@ -103,9 +103,11 @@ function LoginView() {
             return;
           }
           // submitLogin
-          const user = await login({ username, password });
+          const [data, error] = await login({ username, password });
           setLoading(false);
-          console.log("User details: ", user);
+          data !== null && console.log(data);
+          error !== null && console.error(error);
+          // console.log("User details: ", user);
           router.push("/dashboard");
         }}
       >

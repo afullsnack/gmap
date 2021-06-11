@@ -68,7 +68,7 @@ function Students() {
           <Row gutter={16}>
             <Col span={12}>
               <Input
-                type="text"
+                type="email"
                 placeholder="Email"
                 size="large"
                 value={email}
@@ -77,7 +77,7 @@ function Students() {
             </Col>
             <Col span={12}>
               <Input
-                type="text"
+                type="phone"
                 placeholder="Phone"
                 size="large"
                 value={phone}
@@ -160,7 +160,9 @@ function Students() {
           <Row gutter={16}>
             <Col span={18}>
               <Button
-                onClick={(e) => {}}
+                onClick={(e) => {
+                  // onclick take all the data and put in the student data
+                }}
                 type="link"
                 size="large"
                 block
