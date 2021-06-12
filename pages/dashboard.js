@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import withLayout from "components/globalLayout.js";
 import { applySession } from "next-session";
 import Link from "next/link";
+import Head from "next/head";
 import { sessionOptions } from "../lib/config";
 import {
   SnippetsOutlined,
@@ -66,8 +67,52 @@ function Dashboard() {
     );
   });
 
+  const mapRef = useRef();
+  useEffect(() => {
+    const here = {
+      apiKey: "lGKTZBcbuYZSIFESrHSNqgvaJkMfobEPSafo_3ACcDo",
+    };
+    const style = ["reduced.night", "normal.day"];
+
+    const hereTileUrl = `https://2.base.maps.ls.hereapi.com/maptile/2.1/maptile/newest/${style[0]}/{z}/{x}/{y}/512/png8?apiKey=${here.apiKey}&ppi=320`;
+    const hereNormalDayTile = `https://2.base.maps.ls.hereapi.com/maptile/2.1/maptile/newest/${style[1]}/{z}/{x}/{y}/512/png8?apiKey=${here.apiKey}&ppi=320`;
+    const hereStreetMap = `https://1.base.maps.ls.hereapi.com/maptile/2.1/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?apiKey=${here.apiKey}&ppi=320`;
+    const nightLayer = L.tileLayer(hereTileUrl);
+    const dayLayer = L.tileLayer(hereNormalDayTile);
+    const streetLayer = L.tileLayer(hereStreetMap);
+    const map = L.map("map", {
+      center: [8.8493724, 7.8950405],
+      zoom: 15,
+      layers: [nightLayer, dayLayer],
+    });
+    map.attributionControl.addAttribution("&copy; HERE 2019");
+    var littleton = L.marker(map.getCenter())
+      .bindPopup("Nasarawa State University Keffi")
+      .addTo(map);
+    var baseMaps = {
+      "Night Map": nightLayer,
+      "Day Map": dayLayer,
+    };
+
+    var streetMap = {
+      "Street Map": streetLayer,
+    };
+
+    L.control.layers(baseMaps, streetMap).addTo(map);
+    return () => {
+      map.remove();
+    };
+  }, [mapRef]);
+
   return (
     <>
+      <Head>
+        <link
+          rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
+        />
+        <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
+      </Head>
       <Row gutter={[8, 8]} style={{ marign: 0, padding: 0, width: "100%" }}>
         <Col span={8}>
           <Link href="/classes" passHref>
@@ -83,6 +128,13 @@ function Dashboard() {
           <Link href="/students" passHref>
             <StudentCard />
           </Link>
+        </Col>
+        <Col span={24} style={{ height: 400 }}>
+          <div
+            ref={mapRef}
+            id="map"
+            style={{ width: "100%", height: "100%", backgroundColor: "teal" }}
+          ></div>
         </Col>
       </Row>
     </>
