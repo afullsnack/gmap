@@ -17,7 +17,7 @@ import Card from "ui/card";
 import Button from "ui/button";
 import style from "../styles/Home.module.css";
 
-function Dashboard() {
+function Dashboard({ user }) {
   const ClassCard = React.forwardRef(({ onClick, href }, ref) => {
     return (
       <a href={href} onClick={onClick} ref={ref}>
@@ -69,6 +69,9 @@ function Dashboard() {
 
   const mapRef = useRef();
   useEffect(() => {
+    user
+      ? console.log("User in session", user)
+      : console.log("no user in session");
     const here = {
       apiKey: "lGKTZBcbuYZSIFESrHSNqgvaJkMfobEPSafo_3ACcDo",
     };
