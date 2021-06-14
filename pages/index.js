@@ -213,6 +213,7 @@ function CreateAccountView() {
                 ? console.info(data.message, "New user created")
                 : console.log(data?.message);
               error !== null && console.error(error);
+              message.success("User created successfully, now login");
               data?.user ? router.push("/", "/login") : router.push("/error");
             }}
           >
