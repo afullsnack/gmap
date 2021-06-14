@@ -12,7 +12,7 @@ try {
       type: String,
       required: [true, "Please add a valid email account"],
     },
-    isAdmin: { type: Boolean },
+    isAdmin: { type: Boolean, default: false },
   });
   User = mongoose.model("User", UserSchema);
 } catch (err) {

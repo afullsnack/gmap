@@ -201,7 +201,7 @@ function CreateAccountView() {
                 message.error("You must enter a value for the inputs");
               }
 
-              const user = await createAccount({
+              const [data, error] = await createAccount({
                 firstname,
                 lastname,
                 username,
@@ -209,8 +209,11 @@ function CreateAccountView() {
                 password,
               });
               setLoading(false);
-              console.info(user, "New user created data returned");
-              router.push("/", "/login");
+              data?.user
+                ? console.info(data.message, "New user created")
+                : console.log(data?.message);
+              error !== null && console.error(error);
+              data?.user ? router.push("/", "/login") : router.push("/error");
             }}
           >
             Submit

@@ -33,15 +33,19 @@ const handler = async (req, res) => {
     if (firstname == "undefined" || firstname == null) return;
 
     // return the logged in user detail in the database
-    let result = await User.insertOne({
+    let result = await User({
       firstname,
       lastname,
       username,
       email,
       password,
     });
+    result.save((err, res) => {
+      err && console.log(err);
+      res && console.log("Save result", res);
+    });
     console.log("result", result);
-    const user = JSON.parse(JSON.stringify(result.ops[0]));
+    const user = JSON.parse(JSON.stringify(result));
     console.log("User return", user);
     req.session.user = user || {};
     user
