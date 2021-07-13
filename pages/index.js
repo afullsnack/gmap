@@ -108,7 +108,9 @@ function LoginView() {
           data !== null && console.log(data);
           error !== null && console.error(error);
           // console.log("User details: ", user);
-          router.push("/dashboard");
+          data.message == "No such users"
+            ? message.warn("The login credentials don't exist try signing up")
+            : router.push("/dashboard");
         }}
       >
         Login
