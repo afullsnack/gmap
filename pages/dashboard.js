@@ -89,9 +89,16 @@ function Dashboard({ user }) {
       layers: [nightLayer, dayLayer],
     });
     map.attributionControl.addAttribution("&copy; HERE 2019");
-    var littleton = L.marker(map.getCenter())
+    var schoolMarker = L.marker(map.getCenter())
       .bindPopup("Nasarawa State University Keffi")
       .addTo(map);
+
+    var circle = L.circle(map.getCenter(), {
+      color: "blue",
+      fillColor: "blue",
+      fillOpacity: 0.5,
+      radius: 700,
+    }).addTo(map);
     var baseMaps = {
       "Night Map": nightLayer,
       "Day Map": dayLayer,
