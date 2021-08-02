@@ -245,11 +245,14 @@ class EditableTable extends React.Component {
   }
 }
 
-function Courses({ user, status }) {
+function Courses({ user, status, courses }) {
   console.log("user session", user);
   console.log("Student status", status);
   status = user != null || user != undefined ? JSON.parse(status) : null;
   user = user != null || user != undefined ? JSON.parse(user) : null;
+  courses =
+    courses != null || courses != undefined ? JSON.parse(courses) : null;
+  console.log("Courses", courses);
   return (
     <>
       <Row gutter={8} style={{ margin: 0, padding: 0, width: "100%" }}>
