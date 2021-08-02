@@ -250,19 +250,25 @@ function Students({ user, student }) {
 export default withLayout(Students);
 
 export async function getServerSideProps({ req, res }) {
-  await applySession(req, res, sessionOptions);
-  console.log("USER SESSION from server side props", req?.session?.user);
+  try {
+    await applySession(req, res, sessionOptions);
+    console.log("USER SESSION from server side props", req?.session?.user);
 
-  let student = req?.session?.user
-    ? await Student.findOne({ email: req?.session?.user?.email })
-    : null;
-  console.log(student, "student");
+    let student = req?.session?.user
+      ? await Student.findOne({ email: req?.session?.user?.email })
+      : null;
+    console.log(student, "student");
 
-  let user = JSON.stringify(req?.session?.user);
-  student = JSON.stringify(student);
+    let user = JSON.stringify(req?.session?.user);
+    student = JSON.stringify(student);
 
-  // if (!req?.session?.user) return { props: {} };
-  return {
-    props: { user, student },
-  };
+    // if (!req?.session?.user) return { props: {} };
+    return {
+      props: { user, student },
+    };
+  } catch (e) {
+    return {
+      props: {},
+    };
+  }
 }

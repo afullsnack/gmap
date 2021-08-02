@@ -271,32 +271,38 @@ function Courses({ user, status }) {
 export default withLayout(Courses);
 
 export async function getServerSideProps({ req, res }) {
-  await applySession(req, res, sessionOptions);
-  console.log("USER SESSION from server side props", req?.session?.user);
-  let user = JSON.stringify(req?.session?.user);
-  var courses;
+  try {
+    await applySession(req, res, sessionOptions);
+    console.log("USER SESSION from server side props", req);
+    let user = JSON.stringify(req?.session?.user);
+    var courses;
 
-  // check is the student has set their data and that it matches their account
-  let studentCount = await Student.count();
-  const getStatus = async () => {
-    if (studentCount <= 0 || studentCount == null) {
-      return "no_data";
-    } else {
-      var data = await Student.findOne({ email: req?.session?.user?.email });
-      courses = await Course.findOne({
-        level: data?.currentLevel,
-        semester: data?.semester,
-      });
-      return data != null ? "yes_data" : "no_data";
-    }
-  };
-  let status = await getStatus();
-  console.log(status);
-  status = JSON.stringify(status);
-  courses = courses ? JSON.stringify(courses) : null;
+    // check is the student has set their data and that it matches their account
+    let studentCount = await Student.count();
+    const getStatus = async () => {
+      if (studentCount <= 0 || studentCount == null) {
+        return "no_data";
+      } else {
+        var data = await Student.findOne({ email: req?.session?.user?.email });
+        courses = await Course.findOne({
+          level: data?.currentLevel,
+          semester: data?.semester,
+        });
+        return data != null ? "yes_data" : "no_data";
+      }
+    };
+    let status = await getStatus();
+    console.log(status);
+    status = JSON.stringify(status);
+    courses = courses ? JSON.stringify(courses) : null;
 
-  if (!user) return { props: {} };
-  return {
-    props: { user, status, courses },
-  };
+    if (!user) return { props: {} };
+    return {
+      props: { user, status, courses },
+    };
+  } catch (e) {
+    return {
+      props: {},
+    };
+  }
 }
