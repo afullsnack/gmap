@@ -253,7 +253,7 @@ export async function getServerSideProps({ req, res }) {
   await applySession(req, res, sessionOptions);
   console.log("USER SESSION from server side props", req?.session?.user);
 
-  let student = await Student.findOne({ email: req?.session?.user.email });
+  let student = await Student.findOne({ email: req?.session?.user?.email });
   console.log(student, "student");
 
   let user = JSON.stringify(req?.session?.user);

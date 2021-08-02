@@ -282,7 +282,7 @@ export async function getServerSideProps({ req, res }) {
     if (studentCount <= 0 || studentCount == null) {
       return "no_data";
     } else {
-      var data = await Student.findOne({ email: req?.session?.user.email });
+      var data = await Student.findOne({ email: req?.session?.user?.email });
       courses = await Course.findOne({
         level: data?.currentLevel,
         semester: data?.semester,

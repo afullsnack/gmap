@@ -22,10 +22,11 @@ import { useRouter } from "next/router";
 
 function Dashboard({ user }) {
   const router = useRouter();
-  // if (!user || user == null) {
-  //   message.error("You have to login to access this page");
-  //   router.push("/");
-  // }
+  user = JSON.parse(user);
+  if (!user || user == null) {
+    message.error("You have to login to access this page");
+    router.push("/");
+  }
   const GradingCard = React.forwardRef(({ onClick, href }, ref) => {
     return (
       <a href={href} onClick={onClick} ref={ref}>
@@ -198,11 +199,11 @@ export async function getServerSideProps({ req, res }) {
   await applySession(req, res, sessionOptions);
   console.log("USER SESSION from server side props", req?.session?.user);
 
-  // let user = JSON.stringify(req?.session?.user);
+  let user = JSON.stringify(req?.session?.user);
   // console.warn(user, "Stringified user");
 
   // if (!req?.session?.user) return { props: {} };
   return {
-    props: { user: req?.session?.user },
+    props: { user },
   };
 }
