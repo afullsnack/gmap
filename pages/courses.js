@@ -248,8 +248,8 @@ class EditableTable extends React.Component {
 function Courses({ user, status }) {
   console.log("user session", user);
   console.log("Student status", status);
-  status = JSON.parse(status);
-  user = JSON.parse(user);
+  status = user != null || user != undefined ? JSON.parse(status) : null;
+  user = user != null || user != undefined ? JSON.parse(user) : null;
   return (
     <>
       <Row gutter={8} style={{ margin: 0, padding: 0, width: "100%" }}>
@@ -273,7 +273,7 @@ export default withLayout(Courses);
 export async function getServerSideProps({ req, res }) {
   try {
     await applySession(req, res, sessionOptions);
-    console.log("USER SESSION from server side props", req);
+    console.log("USER SESSION from server side props", req?.session?.user);
     let user = JSON.stringify(req?.session?.user);
     var courses;
 
@@ -296,7 +296,7 @@ export async function getServerSideProps({ req, res }) {
     status = JSON.stringify(status);
     courses = courses ? JSON.stringify(courses) : null;
 
-    if (!user) return { props: {} };
+    // if (!user) return { props: {} };
     return {
       props: { user, status, courses },
     };

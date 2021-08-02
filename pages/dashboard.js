@@ -167,17 +167,17 @@ function Dashboard({ user }) {
         <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
       </Head>
       <Row gutter={[8, 8]} style={{ marign: 0, padding: 0, width: "100%" }}>
-        <Col span={8}>
+        {/* <Col span={8}>
           <Link href="/grading" passHref>
             <GradingCard />
           </Link>
-        </Col>
-        <Col span={8}>
+        </Col> */}
+        <Col span={12}>
           <Link href="/courses" passHref>
             <CourseCard />
           </Link>
         </Col>
-        <Col span={8}>
+        <Col span={12}>
           <Link href="/students" passHref>
             <StudentCard />
           </Link>
