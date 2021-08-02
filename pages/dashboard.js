@@ -15,6 +15,7 @@ import Row from "ui/row";
 import Col from "ui/col";
 import Card from "ui/card";
 import Button from "ui/button";
+import message from "ui/message";
 import style from "../styles/Home.module.css";
 import { getCurrentPosition } from "../lib/geolocation";
 import { useRouter } from "next/router";
