@@ -14,15 +14,19 @@ try {
       type: String,
       required: [true, "Add a study level"],
     },
+    semester: {
+      type: String,
+      required: [true, "Add a study semester"],
+    },
     email: {
       type: String,
       unique: true,
-      required: [true, "Please enter an email address"],
+      required: [true, "Please enter a unique email address"],
     },
     phone: { type: String, required: true },
-    courses: { type: [ObjectId], ref: "Course" },
-    faculty: { type: ObjectId, ref: "Faculty" },
-    department: { type: ObjectId, ref: "Department" },
+    courses: { type: String, required: false },
+    faculty: { type: String, required: false },
+    department: { type: String, required: false },
     programme: {
       type: String,
       enum: ["B.Sc", "M.Sc", "B.Eng", "Diploma"],
@@ -32,7 +36,7 @@ try {
     state: { type: String, required: true },
     lga: { type: String, required: true },
   });
-  Student = mongoose.model("Student", StudentSchema);
+  Student = mongoose.models.Student || mongoose.model("Student", StudentSchema);
 } catch (err) {
   console.log(err.message || err.toString());
 }

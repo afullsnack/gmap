@@ -15,6 +15,7 @@ import { connectDB } from "../lib/db";
 // import withLayout from "components/globalLayout.js";
 
 function Home() {
+  // connectDB();
   const [hasAccount, setHasAccount] = useState(true);
   return (
     <Row
@@ -108,7 +109,7 @@ function LoginView() {
           data !== null && console.log(data);
           error !== null && console.error(error);
           // console.log("User details: ", user);
-          data.message == "No such users"
+          data?.message == "No such users" || error
             ? message.warn("The login credentials don't exist try signing up")
             : router.push("/dashboard");
         }}
@@ -212,11 +213,13 @@ function CreateAccountView() {
               });
               setLoading(false);
               data?.user
-                ? console.info(data.message, "New user created")
-                : console.log(data?.message);
+                ? message.success(data.message, "New user created")
+                : message.error(data?.message);
               error !== null && console.error(error);
-              message.success("User created successfully, now login");
-              data?.user ? router.push("/", "/login") : router.push("/error");
+              // message.success("User created successfully, now login");
+              data?.user
+                ? router.push("/", "/login")
+                : message.error("An error occured try again");
             }}
           >
             Submit

@@ -1,6 +1,8 @@
 import { withSession } from "next-session";
 import { sessionOptions } from "../../lib/config";
 import User from "../../models/User";
+import { connectDB } from "../../lib/db";
+connectDB();
 // import { connectToDatabase } from "../../util/mongodb";
 // const MongoStore = require("connect-mongo")(expressSession);
 // var MongoDBStore = require("connect-mongodb-session")(expressSession);
@@ -32,12 +34,15 @@ const handler = async (req, res) => {
     // console.log(firstname, lastname, req.params, req.query, "req body");
     if (firstname == "undefined" || firstname == null) return;
 
-    // return the logged in user detail in the database
+    // add user and check if the user is the first
+    let count = await User.count();
+    console.log(count, count == null, "Count user");
     let result = await User({
       firstname,
       lastname,
       username,
       email,
+      isAdmin: count <= 0 || count == null,
       password,
     });
     result.save((err, res) => {

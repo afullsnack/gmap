@@ -1,26 +1,37 @@
 import { useState } from "react";
 import withLayout from "components/globalLayout.js";
+import { applySession } from "next-session";
 import Col from "ui/col";
 import Row from "ui/row";
 import Input from "ui/input";
 import Button from "ui/button";
 import Select from "ui/select";
+import message from "ui/message";
+import { sessionOptions } from "../lib/config";
+import { updateStudentData } from "../lib/user";
+import Student from "../models/Student";
 
 const { Option } = Select;
 
-function Students() {
-  const [matricNo, setMatricNo] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [level, setLevel] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [faculty, setFaculty] = useState("");
-  const [department, setDepartment] = useState("");
-  const [programme, setProgramme] = useState("");
-  const [country, setCountry] = useState("");
-  const [state, setState] = useState("");
-  const [lga, setLGA] = useState("");
+function Students({ user, student }) {
+  user = JSON.parse(user);
+  student = JSON.parse(student);
+  console.log(user, student);
+
+  const [matricNo, setMatricNo] = useState(student?.matric_no ?? "");
+  const [firstname, setFirstName] = useState(student?.firstname ?? "");
+  const [lastname, setLastName] = useState(student?.lastname ?? "");
+  const [level, setLevel] = useState(student?.currentLevel ?? "");
+  const [semester, setSemester] = useState(student?.semester ?? "");
+  const [email, setEmail] = useState(student?.email ?? "");
+  const [phone, setPhone] = useState(student?.phone ?? "");
+  const [faculty, setFaculty] = useState(student?.faculty ?? "");
+  const [department, setDepartment] = useState(student?.department ?? "");
+  const [programme, setProgramme] = useState(student?.programme ?? "B.Sc");
+  const [country, setCountry] = useState(student?.country ?? "");
+  const [state, setState] = useState(student?.state ?? "");
+  const [lga, setLGA] = useState(student?.lga ?? "");
+  const [loading, setLoading] = useState(false);
   return (
     <>
       <Row
@@ -43,7 +54,7 @@ function Students() {
             placeholder="Matric No."
             size="large"
             value={matricNo}
-            onChange={(e) => setMatricNo(e.taget.value)}
+            onChange={(e) => setMatricNo(e.target.value)}
           />
           <Row gutter={16}>
             <Col span={12}>
@@ -51,7 +62,7 @@ function Students() {
                 type="text"
                 placeholder="First Name"
                 size="large"
-                value={firstName}
+                value={firstname}
                 onChange={(e) => setFirstName(e.target.value)}
               />
             </Col>
@@ -60,7 +71,7 @@ function Students() {
                 type="text"
                 placeholder="Last Name"
                 size="large"
-                value={lastName}
+                value={lastname}
                 onChange={(e) => setLastName(e.target.value)}
               />
             </Col>
@@ -135,7 +146,7 @@ function Students() {
             </Col>
           </Row>
           <Row gutter={16}>
-            <Col span={12}>
+            <Col span={9}>
               <Input
                 type="text"
                 placeholder="Level"
@@ -144,38 +155,90 @@ function Students() {
                 onChange={(e) => setLevel(e.target.value)}
               />
             </Col>
-            <Col span={12}>
+            <Col span={9}>
+              <Input
+                type="text"
+                placeholder="Semester"
+                size="large"
+                value={semester}
+                onChange={(e) => setSemester(e.target.value)}
+              />
+            </Col>
+            <Col span={6}>
               <Select
-                defaultValue="bsc"
-                onChange={(e) => setProgramme(e.target.value)}
+                defaultValue={programme}
+                onChange={(value) => setProgramme(value)}
                 size="large"
               >
-                <Option value="bsc">B.Sc</Option>
-                <Option value="msc">M.Sc</Option>
-                <Option value="bng">B.Eng</Option>
-                <Option value="diploma">Diploma</Option>
+                <Option value="B.Sc">B.Sc</Option>
+                <Option value="M.Sc">M.Sc</Option>
+                <Option value="B.Eng">B.Eng</Option>
+                <Option value="Diploma">Diploma</Option>
               </Select>
             </Col>
           </Row>
           <Row gutter={16}>
-            <Col span={18}>
+            <Col span={24}>
               <Button
-                onClick={(e) => {
+                onClick={async (e) => {
+                  setLoading(true);
+                  if (
+                    matricNo == "" ||
+                    firstname == "" ||
+                    lastname == "" ||
+                    level == "" ||
+                    semester == "" ||
+                    email == "" ||
+                    phone == "" ||
+                    faculty == "" ||
+                    department == "" ||
+                    country == "" ||
+                    state == "" ||
+                    lga == "" ||
+                    programme == ""
+                  ) {
+                    setLoading(false);
+                    return message.error("Values can't be empty");
+                  }
                   // onclick take all the data and put in the student data
+                  const [data, error] = await updateStudentData({
+                    matricNo,
+                    firstname,
+                    lastname,
+                    level,
+                    semester,
+                    email,
+                    phone,
+                    faculty,
+                    department,
+                    country,
+                    state,
+                    lga,
+                    programme,
+                  });
+                  if (data != null) {
+                    setLoading(false);
+                    message.success(data?.message);
+                    console.log(data);
+                  } else {
+                    message.error(error.message);
+                    console.error(error);
+                  }
                 }}
+                loading={loading}
                 type="link"
                 size="large"
                 block
                 style={{ backgroundColor: "#40a9ff", color: "#FFF" }}
               >
-                Update
+                Submit
               </Button>
             </Col>
-            <Col span={6}>
+            {/* <Col span={6}>
               <Button onClick={(e) => {}} type="ghost" size="large" block>
                 Export
               </Button>
-            </Col>
+            </Col> */}
           </Row>
         </Col>
         <Col span={6}></Col>
@@ -185,3 +248,19 @@ function Students() {
 }
 
 export default withLayout(Students);
+
+export async function getServerSideProps({ req, res }) {
+  await applySession(req, res, sessionOptions);
+  console.log("USER SESSION from server side props", req?.session?.user);
+
+  let student = await Student.findOne({ email: req?.session?.user.email });
+  console.log(student, "student");
+
+  let user = JSON.stringify(req?.session?.user);
+  student = JSON.stringify(student);
+
+  // if (!req?.session?.user) return { props: {} };
+  return {
+    props: { user, student },
+  };
+}

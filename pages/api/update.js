@@ -1,6 +1,6 @@
 import { withSession } from "next-session";
 import { sessionOptions } from "../../lib/config";
-import User from "../../models/User";
+import Student from "../../models/Student";
 import { connectDB } from "../../lib/db";
 connectDB();
 // const MongoStore = require("connect-mongo")(expressSession);
@@ -19,23 +19,46 @@ const handler = async (req, res) => {
       return res.json({ error: "Wrong http method used, use POST method" });
 
     // get req body data
-    const { username, password } = JSON.parse(req.body);
+    const {
+      matricNo,
+      firstname,
+      lastname,
+      level,
+      email,
+      phone,
+      faculty,
+      department,
+      country,
+      state,
+      lga,
+      programme,
+    } = JSON.parse(req.body);
 
     // return the logged in user detail in the database
-    let result = await User.findOne({ username, password }, [
-      "firstname",
-      "lastname",
-      "email",
-      "username",
-      "isAdmin",
-    ]);
-
-    console.log("User return", result);
-    const user = JSON.parse(JSON.stringify(result));
-    req.session.user = user || {};
-    user
-      ? res.json({ data: { user, message: "Found User" } })
-      : res.json({ data: { message: "No such users" } });
+    let result = await Student({
+      matric_no: matricNo,
+      firstname,
+      lastname,
+      currentLevel: level,
+      email,
+      phone,
+      faculty,
+      department,
+      programme,
+      country,
+      state,
+      lga,
+    });
+    result.save((err, res) => {
+      err && console.log(err);
+      res && console.log("Save result", res);
+    });
+    console.log("result", result);
+    const student = JSON.parse(JSON.stringify(result));
+    console.log("Student return", student);
+    student
+      ? res.json({ data: { student, message: "Student updated" } })
+      : res.json({ data: { message: "Something went wrong" } });
   } catch (err) {
     console.log(err.message || err.toString());
     res.json({ error: err.message || err.toString() });

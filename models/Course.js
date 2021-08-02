@@ -16,9 +16,8 @@ try {
     ccu: { type: String, required: [true, "Add the course credit unit"] },
     level: { type: String, required: [true, "A study level is required"] },
 
-    lecturer: {
-      type: ObjectId,
-      ref: "Lecturer",
+    semester: {
+      type: String,
     },
   });
   Course = mongoose.model("Course", CourseSchema);

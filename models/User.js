@@ -14,7 +14,7 @@ try {
     },
     isAdmin: { type: Boolean, default: false },
   });
-  User = mongoose.model("User", UserSchema);
+  User = mongoose.models.User || mongoose.model("User", UserSchema);
 } catch (err) {
   console.log(err.message || err.toString());
 }

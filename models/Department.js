@@ -14,7 +14,9 @@ try {
     },
     faculty: { type: ObjectId, ref: "Faculty" },
   });
-  Department = mongoose.model("Department", DepartmentSchema);
+  Department =
+    mongoose.models.Department ||
+    mongoose.model("Department", DepartmentSchema);
 } catch (err) {
   console.log(err.message || err.toString());
 }

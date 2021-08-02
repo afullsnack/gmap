@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import withLayout from "components/globalLayout.js";
 import { applySession } from "next-session";
 import Link from "next/link";
@@ -16,17 +16,24 @@ import Col from "ui/col";
 import Card from "ui/card";
 import Button from "ui/button";
 import style from "../styles/Home.module.css";
+import { getCurrentPosition } from "../lib/geolocation";
+import { useRouter } from "next/router";
 
 function Dashboard({ user }) {
-  const ClassCard = React.forwardRef(({ onClick, href }, ref) => {
+  const router = useRouter();
+  if (!user || user == null) {
+    message.error("You have to login to access this page");
+    router.push("/");
+  }
+  const GradingCard = React.forwardRef(({ onClick, href }, ref) => {
     return (
       <a href={href} onClick={onClick} ref={ref}>
-        <Card title="Classes" extra={<SnippetsOutlined />} hoverable>
+        <Card title="Grades" extra={<SnippetsOutlined />} hoverable>
           <Card.Meta
-            title="Current Classes"
+            title="Grading info"
             description={
               <span className={style.dashboard_primary_span}>
-                View current classes <ArrowRightOutlined />{" "}
+                View grading info <ArrowRightOutlined />{" "}
               </span>
             }
           />
@@ -67,11 +74,14 @@ function Dashboard({ user }) {
     );
   });
 
-  const mapRef = useRef();
-  useEffect(() => {
+  // const mapRef = useRef();
+  const [position, setCoords] = useState([8.8493724, 7.8950405]);
+  useEffect(async () => {
+    console.log(user);
     user
       ? console.log("User in session", user)
       : console.log("no user in session");
+
     const here = {
       apiKey: "lGKTZBcbuYZSIFESrHSNqgvaJkMfobEPSafo_3ACcDo",
     };
@@ -84,8 +94,8 @@ function Dashboard({ user }) {
     const dayLayer = L.tileLayer(hereNormalDayTile);
     const streetLayer = L.tileLayer(hereStreetMap);
     const map = L.map("map", {
-      center: [8.8493724, 7.8950405],
-      zoom: 15,
+      center: position,
+      zoom: 10,
       layers: [nightLayer, dayLayer],
     });
     map.attributionControl.addAttribution("&copy; HERE 2019");
@@ -109,10 +119,41 @@ function Dashboard({ user }) {
     };
 
     L.control.layers(baseMaps, streetMap).addTo(map);
-    return () => {
-      map.remove();
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { longitude, latitude } = position.coords;
+        console.log(latitude, longitude);
+        // coords = { longitude, latitude };
+        setCoords([latitude, longitude]);
+        map.setView([latitude, longitude]);
+        L.marker([latitude, longitude])
+          .bindPopup("My current location")
+          .openPopup()
+          .addTo(map);
+      },
+      onPosError,
+      {
+        enableHighAccuracy: true,
+      }
+    );
+
+    // TODO: check if is admin to get every one elses location
+
+    const onPosError = (error) => {
+      console.error(error);
+      throw error;
     };
-  }, [mapRef]);
+
+    return () => {
+      map.off();
+      map.remove();
+      // var container = L.DomUtil.get("map");
+      // if (container != null) {
+      //   container._leaflet_id = null;
+      // }
+    };
+  }, [position]);
 
   return (
     <>
@@ -125,8 +166,8 @@ function Dashboard({ user }) {
       </Head>
       <Row gutter={[8, 8]} style={{ marign: 0, padding: 0, width: "100%" }}>
         <Col span={8}>
-          <Link href="/classes" passHref>
-            <ClassCard />
+          <Link href="/grading" passHref>
+            <GradingCard />
           </Link>
         </Col>
         <Col span={8}>
@@ -141,7 +182,6 @@ function Dashboard({ user }) {
         </Col>
         <Col span={24} style={{ height: 400 }}>
           <div
-            ref={mapRef}
             id="map"
             style={{ width: "100%", height: "100%", backgroundColor: "teal" }}
           ></div>
@@ -157,10 +197,11 @@ export async function getServerSideProps({ req, res }) {
   await applySession(req, res, sessionOptions);
   console.log("USER SESSION from server side props", req?.session?.user);
 
-  let user = JSON.stringify(req?.session?.user);
+  // let user = JSON.stringify(req?.session?.user);
+  // console.warn(user, "Stringified user");
 
-  if (!user) return { props: {} };
+  // if (!req?.session?.user) return { props: {} };
   return {
-    props: { user },
+    props: { user: req?.session?.user },
   };
 }

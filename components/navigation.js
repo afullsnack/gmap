@@ -19,9 +19,9 @@ export default function Navigation() {
     >
       <Menu.Item key="/dashboard">Dashboard</Menu.Item>
       <Menu.Item key="/courses">Course Info</Menu.Item>
-      <Menu.Item key="/classes">Classes</Menu.Item>
+      {/* <Menu.Item key="/classes">Classes</Menu.Item> */}
       <Menu.Item key="/students">Student Data</Menu.Item>
-      <Menu.Item key="/grading">Grading Info</Menu.Item>
+      {/* <Menu.Item key="/grading">Grading Info</Menu.Item> */}
     </Menu>
   );
 }
