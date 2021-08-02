@@ -14,8 +14,9 @@ import Student from "../models/Student";
 const { Option } = Select;
 
 function Students({ user, student }) {
-  user = JSON.parse(user);
-  student = JSON.parse(student);
+  user = user != null || user != undefined ? JSON.parse(user) : null;
+  student =
+    student != null || student != undefined ? JSON.parse(student) : null;
   console.log(user, student);
 
   const [matricNo, setMatricNo] = useState(student?.matric_no ?? "");
