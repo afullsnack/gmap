@@ -22,11 +22,11 @@ import { useRouter } from "next/router";
 
 function Dashboard({ user }) {
   const router = useRouter();
-  user = JSON.parse(user);
-  if (!user || user == null) {
-    message.error("You have to login to access this page");
-    router.push("/");
-  }
+  // user = JSON.parse(user);
+  // if (!user || user == null) {
+  //   message.error("You have to login to access this page");
+  //   router.push("/");
+  // }
   const GradingCard = React.forwardRef(({ onClick, href }, ref) => {
     return (
       <a href={href} onClick={onClick} ref={ref}>
