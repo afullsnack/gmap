@@ -150,23 +150,38 @@ class EditableTable extends React.Component {
           ) : null,
       },
     ];
-    this.state = {
-      dataSource: [
-        {
-          key: "0",
-          code: "MTH 111",
-          title: "Elementary Mathematics (Algebra and Trigonometry)",
-          unit: "3",
-        },
-        {
-          key: "1",
-          code: "MTH 112",
-          title: "Elementary Mathematics (Vectors Geometry and Dynamics)",
-          unit: "3",
-        },
-      ],
-      count: 2,
-    };
+    this.state =
+      props.courses != null
+        ? {
+            dataSource: [
+              props?.courses?.map((course, i) => {
+                return {
+                  key: i.toString(),
+                  code: course?.code,
+                  title: course?.title,
+                  unit: course?.ccu,
+                };
+              }),
+            ],
+            count: 5,
+          }
+        : {
+            dataSource: [
+              {
+                key: "0",
+                code: "MTH 111",
+                title: "Elementary Mathematics (Algebra and Trigonometry)",
+                unit: "3",
+              },
+              {
+                key: "1",
+                code: "MTH 112",
+                title: "Elementary Mathematics (Vectors Geometry and Dynamics)",
+                unit: "3",
+              },
+            ],
+            count: 2,
+          };
   }
 
   handleDelete = (key) => {
@@ -263,7 +278,7 @@ function Courses({ user, status, courses }) {
               to <a href="/students">Student Info</a>
             </p>
           ) : (
-            <EditableTable />
+            <EditableTable courses={courses} />
           )}
         </Col>
       </Row>
@@ -287,7 +302,7 @@ export async function getServerSideProps({ req, res }) {
         return "no_data";
       } else {
         var data = await Student.findOne({ email: req?.session?.user?.email });
-        courses = await Course.findOne({
+        courses = await Course.find({
           level: data?.currentLevel,
           semester: data?.semester,
         });

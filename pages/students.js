@@ -20,11 +20,15 @@ function Students({ user, student }) {
   console.log(user, student);
 
   const [matricNo, setMatricNo] = useState(student?.matric_no ?? "");
-  const [firstname, setFirstName] = useState(student?.firstname ?? "");
-  const [lastname, setLastName] = useState(student?.lastname ?? "");
+  const [firstname, setFirstName] = useState(
+    (student?.firstname || user?.firstname) ?? ""
+  );
+  const [lastname, setLastName] = useState(
+    (student?.lastname || user?.lastname) ?? ""
+  );
   const [level, setLevel] = useState(student?.currentLevel ?? "");
   const [semester, setSemester] = useState(student?.semester ?? "");
-  const [email, setEmail] = useState(student?.email ?? "");
+  const [email, setEmail] = useState((student?.email || user?.email) ?? "");
   const [phone, setPhone] = useState(student?.phone ?? "");
   const [faculty, setFaculty] = useState(student?.faculty ?? "");
   const [department, setDepartment] = useState(student?.department ?? "");
@@ -43,10 +47,10 @@ function Students({ user, student }) {
         <Col
           span={12}
           style={{
-            width: "100%",
+            // width: "100%",
             display: "flex",
             flexFlow: "column",
-            alignitems: "cemter",
+            alignItems: "center",
             justifyContent: "space-evenly",
           }}
         >
@@ -57,7 +61,7 @@ function Students({ user, student }) {
             value={matricNo}
             onChange={(e) => setMatricNo(e.target.value)}
           />
-          <Row gutter={16}>
+          <Row gutter={16} style={{ margin: 0, width: "100%" }}>
             <Col span={12}>
               <Input
                 type="text"
@@ -77,7 +81,7 @@ function Students({ user, student }) {
               />
             </Col>
           </Row>
-          <Row gutter={16}>
+          <Row gutter={16} style={{ margin: 0, width: "100%" }}>
             <Col span={12}>
               <Input
                 type="email"
@@ -97,7 +101,7 @@ function Students({ user, student }) {
               />
             </Col>
           </Row>
-          <Row gutter={16}>
+          <Row gutter={16} style={{ margin: 0, width: "100%" }}>
             <Col span={12}>
               <Input
                 type="text"
@@ -117,7 +121,7 @@ function Students({ user, student }) {
               />
             </Col>
           </Row>
-          <Row gutter={16}>
+          <Row gutter={16} style={{ margin: 0, width: "100%" }}>
             <Col span={8}>
               <Input
                 type="text"
@@ -146,7 +150,7 @@ function Students({ user, student }) {
               />
             </Col>
           </Row>
-          <Row gutter={16}>
+          <Row gutter={16} style={{ margin: 0, width: "100%" }}>
             <Col span={9}>
               <Input
                 type="text"
@@ -178,7 +182,7 @@ function Students({ user, student }) {
               </Select>
             </Col>
           </Row>
-          <Row gutter={16}>
+          <Row gutter={16} style={{ margin: 0, width: "100%" }}>
             <Col span={24}>
               <Button
                 onClick={async (e) => {
