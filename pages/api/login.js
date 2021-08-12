@@ -19,7 +19,8 @@ const handler = async (req, res) => {
       return res.json({ error: "Wrong http method used, use POST method" });
 
     // get req body data
-    const { username, password } = JSON.parse(req.body);
+    const { username, password } = req.body;
+    console.log(username, password, "Credentials");
 
     // return the logged in user detail in the database
     let result = await User.findOne({ username, password }, [
@@ -31,11 +32,9 @@ const handler = async (req, res) => {
     ]);
 
     console.log("User return", result);
-    const user = JSON.parse(JSON.stringify(result));
-    req.session.user = user || {};
-    user
-      ? res.json({ data: { user, message: "Found User" } })
-      : res.json({ data: { message: "No such users" } });
+    // const user = JSON.stringify(result);
+    // req.session.user = user || {};
+    result ? res.json(result) : res.json(null);
   } catch (err) {
     console.log(err.message || err.toString());
     res.json({ error: err.message || err.toString() });
@@ -48,4 +47,5 @@ export const config = {
   },
 };
 
-export default withSession(handler, sessionOptions);
+export default handler;
+// export default withSession(handler, sessionOptions);

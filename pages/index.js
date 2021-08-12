@@ -12,11 +12,13 @@ import { createAccount, login } from "../lib/user";
 import { applySession } from "next-session";
 import { sessionOptions } from "../lib/config";
 import { connectDB } from "../lib/db";
+import { useSession, signIn, signOut } from "next-auth/client";
 // import withLayout from "components/globalLayout.js";
 
 function Home() {
   // connectDB();
   const [hasAccount, setHasAccount] = useState(true);
+  const [session, loading] = useSession();
   return (
     <Row
       gutter={8}
@@ -104,14 +106,20 @@ function LoginView() {
             return;
           }
           // submitLogin
-          const [data, error] = await login({ username, password });
+          // const [data, error] = await login({ username, password });
+          const data = await signIn("credentials", {
+            username,
+            password,
+            callbackUrl: "http://localhost:3000/dashboard",
+          });
           setLoading(false);
-          data !== null && console.log(data);
-          error !== null && console.error(error);
-          // console.log("User details: ", user);
-          data?.message == "No such users" || error
-            ? message.warn("The login credentials don't exist try signing up")
-            : router.push("/dashboard");
+          console.log(data, "Data from next-auth credential login");
+          // data !== null && console.log(data);
+          // error !== null && console.error(error);
+          // // console.log("User details: ", user);
+          // data?.message == "No such users" || error
+          //   ? message.warn("The login credentials don't exist try signing up")
+          //   : router.push("/dashboard");
         }}
       >
         Login

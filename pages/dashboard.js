@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import withLayout from "components/globalLayout.js";
-import { applySession } from "next-session";
+// import { applySession } from "next-session";
+import { getSession, useSession } from "next-auth/client";
 import Link from "next/link";
 import Head from "next/head";
 import { sessionOptions } from "../lib/config";
@@ -20,8 +21,10 @@ import style from "../styles/Home.module.css";
 import { getCurrentPosition } from "../lib/geolocation";
 import { useRouter } from "next/router";
 
-function Dashboard({ user }) {
+function Dashboard() {
   const router = useRouter();
+  const [session, loading] = useSession();
+  console.log(session, loading, "Session data");
   // user = JSON.parse(user);
   // if (!user || user == null) {
   //   message.error("You have to login to access this page");
@@ -79,10 +82,10 @@ function Dashboard({ user }) {
   // const mapRef = useRef();
   const [position, setCoords] = useState([8.8493724, 7.8950405]);
   useEffect(async () => {
-    console.log(user);
-    user
-      ? console.log("User in session", user)
-      : console.log("no user in session");
+    // console.log(user);
+    // user
+    //   ? console.log("User in session", user)
+    //   : console.log("no user in session");
 
     const here = {
       apiKey: "lGKTZBcbuYZSIFESrHSNqgvaJkMfobEPSafo_3ACcDo",
@@ -195,15 +198,15 @@ function Dashboard({ user }) {
 
 export default withLayout(Dashboard);
 
-export async function getServerSideProps({ req, res }) {
-  await applySession(req, res, sessionOptions);
-  console.log("USER SESSION from server side props", req?.session?.user);
+// export async function getServerSideProps({ req, res }) {
+//   const session = await getSession();
+//   console.log("USER SESSION from server side props", session);
 
-  let user = JSON.stringify(req?.session?.user);
-  // console.warn(user, "Stringified user");
+//   // let user = JSON.stringify(req?.session?.user);
+//   // console.warn(user, "Stringified user");
 
-  // if (!req?.session?.user) return { props: {} };
-  return {
-    props: { user },
-  };
-}
+//   // if (!req?.session?.user) return { props: {} };
+//   return {
+//     props: { user: session?.user },
+//   };
+// }
