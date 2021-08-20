@@ -1,6 +1,7 @@
 import { useState } from "react";
 import withLayout from "components/globalLayout.js";
-import { applySession, withSession } from "next-session";
+// import { applySession, withSession } from "next-session";
+import { getSession, useSession } from "next-auth/client";
 import Col from "ui/col";
 import Row from "ui/row";
 import Input from "ui/input";
@@ -254,47 +255,48 @@ function Students({ user, student }) {
 
 export default withLayout(Students);
 
-// export async function getServerSideProps({ req, res }) {
-//   try {
-//     await applySession(req, res, sessionOptions);
-//     console.log("USER SESSION from server side props", req?.session?.user);
+export async function getServerSideProps(ctx) {
+  try {
+    // await applySession(req, res, sessionOptions);
+    const session = await getSession(ctx);
+    console.log("USER SESSION from server side props", session);
 
-//     let student = req?.session?.user
-//       ? await Student.findOne({ email: req?.session?.user?.email })
-//       : null;
-//     console.log(student, "student");
+    let student = session?.user
+      ? await Student.findOne({ email: session?.user?.email })
+      : null;
+    console.log(student, "student");
 
-//     let user = JSON.stringify(req?.session?.user);
-//     student = JSON.stringify(student);
+    let user = JSON.stringify(session.user);
+    student = JSON.stringify(student);
 
-//     // if (!req?.session?.user) return { props: {} };
-//     return {
-//       props: { user, student },
-//     };
-//   } catch (e) {
-//     return {
-//       props: {},
-//     };
-//   }
-// }
+    // if (!req?.session?.user) return { props: {} };
+    return {
+      props: { user, student },
+    };
+  } catch (e) {
+    return {
+      props: {},
+    };
+  }
+}
 
-export const getServerSideProps = withSession(async function ({ req, res }) {
-  // Get the user's session based on the request
-  const user = req.session.get("user");
+// export const getServerSideProps = withSession(async function ({ req, res }) {
+//   // Get the user's session based on the request
+//   const user = req.session.get("user");
 
-  let student = user ? await Student.findOne({ email: user?.email }) : null;
-  console.log(student, "student");
+//   let student = user ? await Student.findOne({ email: user?.email }) : null;
+//   console.log(student, "student");
 
-  // if (!user) {
-  //   return {
-  //     redirect: {
-  //       destination: "/login",
-  //       permanent: false,
-  //     },
-  //   };
-  // }
+//   // if (!user) {
+//   //   return {
+//   //     redirect: {
+//   //       destination: "/login",
+//   //       permanent: false,
+//   //     },
+//   //   };
+//   // }
 
-  return {
-    props: { user },
-  };
-});
+//   return {
+//     props: { user },
+//   };
+// });
