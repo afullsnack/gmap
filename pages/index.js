@@ -10,7 +10,7 @@ import Button from "antd/lib/button";
 import message from "antd/lib/message";
 import { createAccount, login } from "../lib/user";
 import { applySession } from "next-session";
-import { sessionOptions } from "../lib/config";
+import { sessionOptions, url } from "../lib/config";
 import { connectDB } from "../lib/db";
 import { useSession, signIn, signOut } from "next-auth/client";
 // import withLayout from "components/globalLayout.js";
@@ -110,7 +110,7 @@ function LoginView() {
           const data = await signIn("credentials", {
             username,
             password,
-            callbackUrl: "http://localhost:3000/dashboard",
+            callbackUrl: `${url}/dashboard`,
           });
           setLoading(false);
           console.log(data, "Data from next-auth credential login");

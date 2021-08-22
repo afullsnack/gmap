@@ -73,4 +73,5 @@ export const config = {
   },
 };
 
-export default withSession(handler, sessionOptions);
+export default handler;
+// export default withSession(handler, sessionOptions);
